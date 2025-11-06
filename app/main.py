@@ -11,6 +11,11 @@ def main():
         _ = sys.stdout.write("$ ")
         command = input()
         match command.split():
+            case ["cd", directory]:
+                try:
+                    os.chdir(directory)
+                except FileNotFoundError:
+                    print(f"cd: {directory}: No such file or directory")
             case ["exit"]:
                 exit()
             case ["pwd"]:
@@ -20,7 +25,7 @@ def main():
             case ["echo", *values]:
                 print(f"{' '.join(values)}")
             case ["type", command]:
-                if command in ["echo", "exit", "type", "pwd"]:
+                if command in ["echo", "exit", "type", "pwd", "cd"]:
                     print(f"{command} is a shell builtin")
                     continue 
                 
