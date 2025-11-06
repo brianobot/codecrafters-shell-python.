@@ -7,8 +7,12 @@ def main():
         _ = sys.stdout.write("$ ")
         command = input()
         match command.split():
+            case ["exit"]:
+                exit()
             case ["exit", exit_code]:
                 exit(int(exit_code))
+            case ["echo", *values]:
+                print(f"{' '.join(values)}")
             case _:
                 print(f"{command}: command not found")
 
