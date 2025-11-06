@@ -1,6 +1,7 @@
 import os
-import shutil
 import sys
+import shutil
+import subprocess
 from pathlib import Path
 
 
@@ -22,17 +23,29 @@ def main():
                     continue 
                 
                 found = False
-                paths = os.environ.get("PATH").split(":")
+                paths = os.environ["PATH"].split(":")
                 for path in paths:
                     file_exists = Path(f"{path}/{command}").exists()
                     if file_exists:
                         exec_path: str | None = shutil.which(command)
-                        if exec_path  is not None:
+                        if exec_path is not None:
                             print(f"{command} is {exec_path}")
                             found = True
                             break
                 if not found:
                     print(f"{command}: not found")
+            case [command, *args]:
+                paths = os.environ["PATH"].split(":")
+                found = False
+                for path in paths:
+                    file_exists = Path(f"{path}/{command}").exists()
+                    if file_exists:
+                        found = True
+                        _ = subprocess.run([command, *args])
+                    
+                if not found:
+                    print(f"{command}: command not found")
+                        
             case _:
                 print(f"{command}: command not found")
 
