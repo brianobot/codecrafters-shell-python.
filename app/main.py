@@ -6,7 +6,11 @@ def main():
     while True:
         _ = sys.stdout.write("$ ")
         command = input()
-        print(f"{command}: command not found")
+        match command.split():
+            case ["exit", exit_code]:
+                exit(int(exit_code))
+            case _:
+                print(f"{command}: command not found")
 
 
 if __name__ == "__main__":
