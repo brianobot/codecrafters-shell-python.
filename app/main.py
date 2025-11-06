@@ -1,4 +1,7 @@
+import os
+import shutil
 import sys
+from pathlib import Path
 
 
 def main():
@@ -16,7 +19,19 @@ def main():
             case ["type", command]:
                 if command in ["echo", "exit", "type"]:
                     print(f"{command} is a shell builtin")
-                else:
+                    continue 
+                
+                found = False
+                paths = os.environ.get("PATH").split(":")
+                for path in paths:
+                    file_exists = Path(f"{path}/{command}").exists()
+                    if file_exists:
+                        exec_path: str | None = shutil.which(command)
+                        if exec_path  is not None:
+                            print(f"{command} is {exec_path}")
+                            found = True
+                            break
+                if not found:
                     print(f"{command}: not found")
             case _:
                 print(f"{command}: command not found")
