@@ -13,12 +13,14 @@ def main():
         match command.split():
             case ["exit"]:
                 exit()
+            case ["pwd"]:
+                print(f"{os.getcwd()}")
             case ["exit", exit_code]:
                 exit(int(exit_code))
             case ["echo", *values]:
                 print(f"{' '.join(values)}")
             case ["type", command]:
-                if command in ["echo", "exit", "type"]:
+                if command in ["echo", "exit", "type", "pwd"]:
                     print(f"{command} is a shell builtin")
                     continue 
                 
