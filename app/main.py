@@ -13,6 +13,8 @@ def main():
         match command.split():
             case ["cd", directory]:
                 try:
+                    if directory.startswith("~"):
+                        directory = directory.replace("~", os.environ["HOME"])
                     os.chdir(directory)
                 except FileNotFoundError:
                     print(f"cd: {directory}: No such file or directory")
