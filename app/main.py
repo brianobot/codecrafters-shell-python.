@@ -1,29 +1,34 @@
 import os
 import sys
 import shutil
-import argparse
 import subprocess
 from pathlib import Path
 
 
-global_parser = argparse.ArgumentParser()
-
-
-def parse_single_quoted_str(text: str, keep_quote: bool = False) -> str:
+def parse_quoted_str(text: str, keep_quote: bool = False) -> str:
     index = 0
     current = ""
-    inside_quote = False
     last_char_space = False
+    
+    inside_single_quote = False
+    inside_double_quote = False
     
     while index < len(text):
         char = text[index]
         
-        if char == "'":
-            inside_quote = not inside_quote
+        if char == "'" and not inside_double_quote:
+            inside_single_quote = not inside_single_quote
+            
             if keep_quote:
-                current += "'"
+                current += char
+        elif char == '"' and not inside_single_quote:
+            inside_double_quote = not inside_double_quote
+            
+            if keep_quote:
+                current += char
+                
         elif char == " ":
-            if inside_quote:
+            if inside_double_quote or inside_single_quote:
                 current += " "
             else:
                 if not last_char_space:
@@ -86,7 +91,7 @@ def main():
                 exit(int(exit_code))
             case ["echo", *_]:
                 text = user_input.lstrip("echo").lstrip()
-                print(parse_single_quoted_str(text))                
+                print(parse_quoted_str(text))                
             case ["type", command]:
                 if command in ["echo", "exit", "type", "pwd", "cd"]:
                     print(f"{command} is a shell builtin")
@@ -108,7 +113,7 @@ def main():
             case [command, *args]:
                 args = user_input.lstrip(command).lstrip(" ")
                 
-                refined_args = parse_single_quoted_str(args, keep_quote=True)
+                refined_args = parse_quoted_str(args, keep_quote=True)
                 args_list = tokenize_single_quote(refined_args)
                 
                 paths = os.environ["PATH"].split(":")
