@@ -43,18 +43,23 @@ def parse_quoted_str(text: str, keep_quote: bool = False) -> str:
     return current
             
             
-def tokenize_single_quote(text: str) -> list[str]:
+def tokenize_quote(text: str) -> list[str]:
+    index = 0
     tokens = []
     current = ""
-    inside_quote = False
-    index = 0
+    
+    inside_single_quote = False
+    inside_double_quote = False
     
     while index < len(text):
         char  = text[index]
             
-        if char == "'":
-            inside_quote = not inside_quote
-        elif char.isspace() and not inside_quote:
+        if char == "'" and not inside_double_quote:
+            inside_single_quote = not inside_single_quote
+        elif char == '"' and not inside_single_quote:
+           inside_double_quote = not inside_double_quote 
+  
+        elif char == " " and not (inside_double_quote or inside_single_quote):
             if current:
                 tokens.append(current)
                 current = ""
@@ -114,7 +119,7 @@ def main():
                 args = user_input.lstrip(command).lstrip(" ")
                 
                 refined_args = parse_quoted_str(args, keep_quote=True)
-                args_list = tokenize_single_quote(refined_args)
+                args_list = tokenize_quote(refined_args)
                 
                 paths = os.environ["PATH"].split(":")
                 found = False
