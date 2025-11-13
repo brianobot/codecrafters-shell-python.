@@ -10,33 +10,43 @@ def parse_quoted_str(text: str, keep_quote: bool = False) -> str:
     current = ""
     last_char_space = False
     
+    active_backslash = False
     inside_single_quote = False
     inside_double_quote = False
     
     while index < len(text):
         char = text[index]
         
-        if char == "'" and not inside_double_quote:
+        if char == "'" and not inside_double_quote and not active_backslash:
             inside_single_quote = not inside_single_quote
             
             if keep_quote:
                 current += char
-        elif char == '"' and not inside_single_quote:
+        elif char == '"' and not inside_single_quote and not active_backslash:
             inside_double_quote = not inside_double_quote
             
             if keep_quote:
                 current += char
-                
+        
         elif char == " ":
-            if inside_double_quote or inside_single_quote:
+            if inside_double_quote or inside_single_quote or active_backslash:
                 current += " "
+                active_backslash = False
             else:
                 if not last_char_space:
                     current += " "
                 last_char_space = True
+                
+        elif char == "\\" and not(inside_double_quote or inside_single_quote):
+            if active_backslash:
+                current += "\\"
+                
+            active_backslash = True       
+            
         else:
             current += char
             last_char_space = False
+            active_backslash = False
         
         index += 1
         
