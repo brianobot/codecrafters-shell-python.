@@ -171,6 +171,7 @@ def main():
         
         if ">" in user_input or "1>" in user_input:
             os.system(user_input)
+            continue
         
         if user_input.startswith("'") or user_input.startswith('"'):
             args_list = tokenize_quote(user_input)    
