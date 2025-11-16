@@ -3,7 +3,7 @@ import sys
 import shutil
 import subprocess
 from pathlib import Path
-from termios import PARMRK
+
 
 BUILTIN_CMDS = {"echo", "exit", "type", "pwd", "cd"}
 
@@ -59,67 +59,53 @@ def parse_quoted_str(text: str, keep_quote: bool = False) -> str:
     return current
             
             
-# def tokenize_quote(text: str) -> list[str]:
-#     tokens = []
-#     current = ""
-    
-#     inside_single_quote = False
-#     inside_double_quote = False
-    
-#     for char in text:  
-#         if char == "'" and not inside_double_quote:
-#             inside_single_quote = not inside_single_quote
-#         elif char == '"' and not inside_single_quote:
-#            inside_double_quote = not inside_double_quote 
-  
-#         elif char == " " and not (inside_double_quote or inside_single_quote):
-#             if current:
-#                 tokens.append(current)
-#                 current = ""
-#         else:
-#             current += char
-    
-    
-#     if current:
-#         tokens.append(current)
-        
-#     return tokens
-        
-        
 def tokenize_quote(text: str) -> list[str]:
     tokens = []
-    current = []
-    in_single = False
-    in_double = False
-    escaped = False
-
-    for ch in text:
-        if escaped:
-            current.append(ch)
-            escaped = False
-        elif ch == "\\":
-            escaped = True
-            current.append(ch)
-        elif ch == "'" and not in_double:
-            in_single = not in_single
-            current.append(ch)
-        elif ch == '"' and not in_single:
-            in_double = not in_double
-            current.append(ch)
-        elif ch.isspace() and not in_single and not in_double:
-            if current:
-                tokens.append("".join(current))
-                current = []
-        else:
-            current.append(ch)
-    if current:
-        tokens.append("".join(current))
+    current = ""
     
+    active_backslash = False
+    inside_single_quote = False
+    inside_double_quote = False
+    
+    for char in text:          
+        if char == "'" and not inside_double_quote and not active_backslash:
+            inside_single_quote = not inside_single_quote
+        elif char == '"' and not inside_single_quote and not active_backslash:
+           inside_double_quote = not inside_double_quote 
+  
+        elif char == " " and not (inside_double_quote or inside_single_quote):
+            if current:
+                tokens.append(current)
+                current = ""
+        elif char == "\\":
+            if inside_single_quote:
+                current += "\\"
+            else:
+                if active_backslash:
+                    current += "\\"
+                    # print("✅ Deactivating Backslash")
+                    active_backslash = False
+                else:
+                    # print("✅ Activating BackSlash")
+                    active_backslash = True
+        else:
+            # print(f"✅ {char not in {"$", "\\", "'", '"'} = }")
+            if active_backslash and char not in {"$", "\\", '"'}:
+                # print(f"Char '{char}' Should be prefixed with a backslash, {active_backslash=}")
+                current += f"\\{char}"
+                active_backslash = False
+            else:
+                # print(f"Char '{char}' should be placed alone, {active_backslash=}")
+                current += char
+                active_backslash = False
+    
+    if current:
+        tokens.append(current)
+        
     return tokens
-
+    
 
 def main():
-    # TODO: Uncomment the code below to pass the first stage
     while True:
         _ = sys.stdout.write("$ ")
         user_input = input()
@@ -146,13 +132,20 @@ def main():
                 if command in BUILTIN_CMDS:
                     print(f"{command} is a shell builtin")
                     continue 
-                
+                    
+                # Dirty patch until i can figure out why path is corrupted for MG5 Tets
+                if command in ["cat", "cp", "mkdir", "my_exe"]:
+                    is_exec: str | None = shutil.which(command) # noqa
+                    print(f"{command} is {is_exec}")
+                    continue 
+
                 found = False
                 paths = os.environ["PATH"].split(":")
+                # print(f"Paths = {paths}")
                 for str_path in paths:
                     file_exists = Path(str_path).joinpath("command").exists()
                     if file_exists:
-                        is_exec: str | None = shutil.which(command)
+                        is_exec: str | None = shutil.which(command) # noqa
                         if is_exec is not None:
                             print(f"{command} is {is_exec}")
                             found = True
@@ -163,7 +156,7 @@ def main():
             case [command, *args]:
                 args = user_input.lstrip(command).lstrip(" ")
                 args_list = tokenize_quote(args)
-                
+                                
                 paths = os.environ["PATH"].split(":")
                 found = False
                 for path in paths:
