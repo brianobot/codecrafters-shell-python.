@@ -169,6 +169,9 @@ def main():
         _ = sys.stdout.write("$ ")
         user_input = input()
         
+        if ">" in user_input or "1>" in user_input:
+            os.system(user_input)
+        
         if user_input.startswith("'") or user_input.startswith('"'):
             args_list = tokenize_quote(user_input)    
             command, *args = args_list
