@@ -1,11 +1,30 @@
 import os
 import sys
 import shutil
+import readline
 import subprocess
 from pathlib import Path
 
-
 BUILTIN_CMDS = {"echo", "exit", "type", "pwd", "cd"}
+
+
+def make_completer(vocabulary):
+    # https://docs.python.org/3/library/rlcompleter.html#rlcompleter.Completer
+    def custom_complete(text, state):
+        # None is returned for the end of the completion session.
+        results = [x + " " for x in vocabulary if x.startswith(text)] + [None]
+
+        # A space is added to the completion since the Python readline doesn't
+        # do this on its own. When a word is fully completed we want to mimic
+        # the default readline library behavior of adding a space after it.
+        return results[state]
+    return custom_complete
+
+
+vocabulary = {'echo', 'exit'}
+readline.parse_and_bind("tab: complete")
+readline.parse_and_bind("bind ^I rl_complete")
+readline.set_completer(make_completer(vocabulary))
 
 
 def cd(directory: str):
@@ -167,9 +186,15 @@ def tokenize_quote(text: str) -> list[str]:
 def main():
     while True:
         _ = sys.stdout.write("$ ")
-        user_input = input()
+        user_input = input().strip()
         
-        if ">" in user_input or "1>" in user_input or "2>" in user_input or ">>" in user_input or "1>>" in user_input:
+        if (
+            ">" in user_input 
+            or "1>" in user_input 
+            or "2>" in user_input 
+            or ">>" in user_input 
+            or "1>>" in user_input
+        ):
             os.system(user_input)
             continue
         
