@@ -5,13 +5,14 @@ import readline
 import subprocess
 from pathlib import Path
 
-
-from .internals import tokenize_quote, make_completer
 from .commands import cd, echo, run_command, _type
+from .internals import tokenize_quote, make_completer
 
 vocabulary = {'echo', 'exit'}
+
 readline.parse_and_bind("tab: complete")
-readline.parse_and_bind("bind ^I rl_complete")
+if sys.platform == "darwin":
+    readline.parse_and_bind("bind ^I rl_complete")
 readline.set_completer(make_completer(vocabulary))
 
 
