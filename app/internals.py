@@ -6,7 +6,6 @@ from typing import Callable
 BUILTIN_CMDS = {"echo", "exit", "type", "pwd", "cd"}
 
 
-
 def parse_quoted_str(text: str, keep_quote: bool = False) -> str:
     current = ""
     last_char_space = False
@@ -108,19 +107,17 @@ def make_completer(vocabulary) -> Callable[[str, int], str | None]:
     # https://docs.python.org/3/library/rlcompleter.html#rlcompleter.Completer
     def custom_complete(text, state):
         # None is returned for the end of the completion session.
-        results = [x + " " for x in vocabulary if x.startswith(text)] + [None]
+        results = [x for x in vocabulary if x.startswith(text)] + [None]
 
         # A space is added to the completion since the Python readline doesn't
         # do this on its own. When a word is fully completed we want to mimic
         # the default readline library behavior of adding a space after it.
-        return results[state]
+        return results[state] + " " if (len(results) == 2 and results[state] is not None) else results[state]
     return custom_complete
 
 
 def build_vocabulary():
-    paths = os.environ["PATH"].split(":")
-    # print(f"{paths = }")
-    
+    paths = os.environ["PATH"].split(":")  
     vocab = set()
     for directory in paths:
         if not directory:

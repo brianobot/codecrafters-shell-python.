@@ -19,8 +19,7 @@ readline.set_completer(make_completer(vocabulary))
 
 def main():
     while True:
-        _ = sys.stdout.write("$ ")
-        user_input = input().strip()
+        user_input = input("$ ").strip()
         
         if (
             ">" in user_input 
