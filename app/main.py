@@ -6,9 +6,10 @@ import subprocess
 from pathlib import Path
 
 from .commands import cd, echo, run_command, _type
-from .internals import tokenize_quote, make_completer
+from .internals import tokenize_quote, make_completer, build_vocabulary
 
-vocabulary = {'echo', 'exit'}
+
+vocabulary = build_vocabulary()    
 
 readline.parse_and_bind("tab: complete")
 if sys.platform == "darwin":

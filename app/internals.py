@@ -1,4 +1,10 @@
+import os
+from pathlib import Path
 from typing import Callable
+
+
+BUILTIN_CMDS = {"echo", "exit", "type", "pwd", "cd"}
+
 
 
 def parse_quoted_str(text: str, keep_quote: bool = False) -> str:
@@ -109,3 +115,26 @@ def make_completer(vocabulary) -> Callable[[str, int], str | None]:
         # the default readline library behavior of adding a space after it.
         return results[state]
     return custom_complete
+
+
+def build_vocabulary():
+    paths = os.environ["PATH"].split(":")
+    # print(f"{paths = }")
+    
+    vocab = set()
+    for directory in paths:
+        if not directory:
+            continue
+
+        p = Path(directory)
+        if not p.is_dir():
+            continue  # ghosts of PATH past
+
+        for file in p.iterdir():
+            # Pick only real executables (and skip directories)
+            if file.is_file() and os.access(file, os.X_OK):
+                vocab.add(file.name)
+
+    return BUILTIN_CMDS.union(vocab)
+    
+    
