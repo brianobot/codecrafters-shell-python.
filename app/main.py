@@ -18,9 +18,10 @@ readline.set_completer(make_completer(vocabulary))
 
 
 def main():
+    command_count = 0
     while True:
         user_input = input("$ ").strip()
-        # readline.add_history(user_input)
+        command_count += 1
         
         if (
             ">" in user_input 
@@ -69,6 +70,9 @@ def main():
                 readline.read_history_file(history_filepath)
             case ["history", "-w", history_filepath]:
                 readline.write_history_file(history_filepath)
+            case ["history", "-a", history_filepath]:
+                readline.append_history_file(command_count, history_filepath)
+                command_count = 0
             case ["exit"]:
                 exit()
             case ["exit", exit_code]:
