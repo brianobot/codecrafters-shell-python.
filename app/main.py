@@ -67,6 +67,8 @@ def main():
                     current_index += 1
             case ["history", "-r", history_filepath]:
                 readline.read_history_file(history_filepath)
+            case ["history", "-w", history_filepath]:
+                readline.write_history_file(history_filepath)
             case ["exit"]:
                 exit()
             case ["exit", exit_code]:
