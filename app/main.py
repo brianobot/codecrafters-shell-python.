@@ -80,8 +80,10 @@ def main():
                 readline.append_history_file(command_count, history_filepath)
                 command_count = 0
             case ["exit"]:
+                readline.write_history_file(os.environ.get("HISTFILE"))
                 exit()
             case ["exit", exit_code]:
+                readline.write_history_file(os.environ.get("HISTFILE"))
                 exit(int(exit_code))
             case ["pwd"]:
                 print(f"{os.getcwd()}")
