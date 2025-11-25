@@ -65,6 +65,8 @@ def main():
                 for i in range(current_index, history_length + 1):
                     print(f"\t{current_index} {readline.get_history_item(i)}")
                     current_index += 1
+            case ["history", "-r", history_filepath]:
+                readline.read_history_file(history_filepath)
             case ["exit"]:
                 exit()
             case ["exit", exit_code]:
