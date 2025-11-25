@@ -58,6 +58,13 @@ def main():
             case ["history"]:
                 for i in range(1, readline.get_current_history_length() + 1):
                     print(f"\t{i} {readline.get_history_item(i)}")
+            case ["history", limit] if limit.isdigit():
+                limit = int(limit)
+                history_length = readline.get_current_history_length()
+                current_index = (history_length - limit) + 1
+                for i in range(current_index, history_length + 1):
+                    print(f"\t{current_index} {readline.get_history_item(i)}")
+                    current_index += 1
             case ["exit"]:
                 exit()
             case ["exit", exit_code]:
