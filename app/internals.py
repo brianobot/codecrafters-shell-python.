@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Callable
 
 
-BUILTIN_CMDS = {"echo", "exit", "type", "pwd", "cd"}
+BUILTIN_CMDS = {"echo", "exit", "type", "pwd", "cd", "history"}
 
 
 def parse_quoted_str(text: str, keep_quote: bool = False) -> str:

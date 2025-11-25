@@ -6,7 +6,7 @@ from pathlib import Path
 from .internals import parse_quoted_str, tokenize_quote
 
 
-BUILTIN_CMDS = {"echo", "exit", "type", "pwd", "cd"}
+BUILTIN_CMDS = {"echo", "exit", "type", "pwd", "cd", "history"}
 
 
 def cd(directory: str) -> None:
