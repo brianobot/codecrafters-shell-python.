@@ -28,6 +28,7 @@ def main():
             or ">>" in user_input 
             or "1>>" in user_input
             or "2>>" in user_input
+            or "|" in user_input
         ):
             os.system(user_input)
             continue
