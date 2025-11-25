@@ -20,6 +20,7 @@ readline.set_completer(make_completer(vocabulary))
 def main():
     while True:
         user_input = input("$ ").strip()
+        # readline.add_history(user_input)
         
         if (
             ">" in user_input 
@@ -54,6 +55,9 @@ def main():
             continue
             
         match user_input.split():
+            case ["history"]:
+                for i in range(1, readline.get_current_history_length() + 1):
+                    print(f"\t{i} {readline.get_history_item(i)}")
             case ["exit"]:
                 exit()
             case ["exit", exit_code]:
