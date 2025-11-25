@@ -19,6 +19,12 @@ readline.set_completer(make_completer(vocabulary))
 
 def main():
     command_count = 0
+    # Load history from file on startup
+    try:
+        readline.read_history_file(os.environ.get("HISTFILE"))
+    except Exception:
+        pass
+        
     while True:
         user_input = input("$ ").strip()
         command_count += 1
